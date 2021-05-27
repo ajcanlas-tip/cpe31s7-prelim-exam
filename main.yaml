@@ -1,0 +1,32 @@
+---
+- name: Prelim playbook
+  hosts: ansible
+
+  tasks:
+          - name: Change MOTD
+            lineinfile:
+                    path: '/etc/motd'
+                    line: 'Ansible Managed by 1820120'
+                    state: present
+
+          - name: Add user
+            ansible.builtin.user:
+                    name: pmljosef-tip
+                    password: PrelimExam
+
+
+          - name: Create group
+            ansible.builtin.group:
+                    name: sysad2
+
+
+          - name: Install hop
+            yum:
+                name: htop
+                state: present
+                update_cache: yes
+
+
+
+
+
