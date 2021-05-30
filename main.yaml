@@ -1,0 +1,48 @@
+---
+- hosts: all
+  vars:
+    user_password: AnsibleManaged
+
+  tasks:
+  - name: Change motd
+    copy:
+      content: "Ansible Managed by 1811848\n"
+      dest: /etc/motd
+
+  - name: Create a user
+    user:
+      name: bdgliongson-tip
+      password: "{{ user_password | password_hash('sha512') }}"
+
+
+  - name: allow password-less sudo access to user
+    copy:
+      dest: /etc/sudoers.d/bdgliongson-tip
+      content: 'bdgliongson-tip ALL=(ALL) NOPASSWD: ALL'
+      validate: /usr/sbin/visudo -cf %s
+
+
+  - name: Install local user ssh key
+    authorized_key:
+      user: bdgliongson-tip
+      state: present
+      manage_dir: true
+      key: "{{ lookup('file', '/home/vagrant/.ssh/id_rsa.pub') }}"
+
+
+  - name: Create a group
+    group:
+      name: sysad2
+      state: present
+
+
+  - name: Install epel-release
+    yum:
+      name: epel-release
+      state: latest
+
+
+  - name: Install htop
+    yum:
+      name: htop
+      state: latest
